@@ -2,7 +2,7 @@ export function naira(value: number) {
   return "₦" + Math.round(value).toLocaleString("en-NG");
 }
 
-export function formatDateTime(iso: string) {
+export function formatDateTime(iso: string | Date) {
   return new Date(iso).toLocaleString("en-NG", {
     weekday: "short",
     day: "numeric",
@@ -13,7 +13,7 @@ export function formatDateTime(iso: string) {
   });
 }
 
-export function formatTime(iso: string) {
+export function formatTime(iso: string | Date) {
   return new Date(iso).toLocaleTimeString("en-NG", { hour: "numeric", minute: "2-digit" });
 }
 
