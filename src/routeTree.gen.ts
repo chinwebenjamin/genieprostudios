@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as PackagesRouteImport } from './routes/packages'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as PayBookingIdRouteImport } from './routes/pay.$bookingId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +41,11 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PayBookingIdRoute = PayBookingIdRouteImport.update({
+  id: '/pay/$bookingId',
+  path: '/pay/$bookingId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/book': typeof BookRoute
   '/packages': typeof PackagesRoute
   '/terms': typeof TermsRoute
+  '/pay/$bookingId': typeof PayBookingIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/book': typeof BookRoute
   '/packages': typeof PackagesRoute
   '/terms': typeof TermsRoute
+  '/pay/$bookingId': typeof PayBookingIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +70,22 @@ export interface FileRoutesById {
   '/book': typeof BookRoute
   '/packages': typeof PackagesRoute
   '/terms': typeof TermsRoute
+  '/pay/$bookingId': typeof PayBookingIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/book' | '/packages' | '/terms'
+  fullPaths:
+    '/' | '/auth' | '/book' | '/packages' | '/terms' | '/pay/$bookingId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/book' | '/packages' | '/terms'
-  id: '__root__' | '/' | '/auth' | '/book' | '/packages' | '/terms'
+  to: '/' | '/auth' | '/book' | '/packages' | '/terms' | '/pay/$bookingId'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/book'
+    | '/packages'
+    | '/terms'
+    | '/pay/$bookingId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +94,7 @@ export interface RootRouteChildren {
   BookRoute: typeof BookRoute
   PackagesRoute: typeof PackagesRoute
   TermsRoute: typeof TermsRoute
+  PayBookingIdRoute: typeof PayBookingIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +134,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pay/$bookingId': {
+      id: '/pay/$bookingId'
+      path: '/pay/$bookingId'
+      fullPath: '/pay/$bookingId'
+      preLoaderRoute: typeof PayBookingIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,6 +150,7 @@ const rootRouteChildren: RootRouteChildren = {
   BookRoute: BookRoute,
   PackagesRoute: PackagesRoute,
   TermsRoute: TermsRoute,
+  PayBookingIdRoute: PayBookingIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
