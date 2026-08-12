@@ -285,6 +285,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      busy_slots: {
+        Args: { _from: string; _to: string }
+        Returns: {
+          ends_at: string
+          starts_at: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
