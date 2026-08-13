@@ -67,7 +67,7 @@ function PayPage() {
   const amount = paymentType === "full" ? booking.price : Math.round(booking.price * 0.7);
 
   const submit = async () => {
-    if (!file) return toast.error("Upload your transfer receipt.");
+    if (!file) { toast.error("Upload your transfer receipt."); return; }
     if (!user) return;
     setBusy(true);
     try {
