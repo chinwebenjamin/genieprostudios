@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
 import { useStudioSettings, useSignedUrl } from "@/hooks/useStudio";
 import { naira, formatDateTime, STATUS_LABEL } from "@/lib/format";
@@ -106,7 +107,7 @@ function BookingList({ statuses, actions }: { statuses: string[]; actions?: bool
 
   const setStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("bookings").update({ status }).eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(`Booking ${STATUS_LABEL[status]?.toLowerCase() ?? status}.`);
     void qc.invalidateQueries({ queryKey: ["manager-bookings"] });
   };
@@ -194,11 +195,11 @@ function Inventory() {
   const refresh = () => void qc.invalidateQueries({ queryKey: ["all-categories"] });
 
   const add = async () => {
-    if (!name.trim()) return toast.error("Give the category a name.");
+    if (!name.trim()) { toast.error("Give the category a name."); return; }
     const { error } = await supabase
       .from("categories")
       .insert({ name: name.trim(), description: description || null, quantity, provided_by: providedBy });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setName("");
     setDescription("");
     setQuantity(1);
@@ -206,16 +207,19 @@ function Inventory() {
     void qc.invalidateQueries({ queryKey: ["categories"] });
   };
 
-  const update = async (id: string, patch: Record<string, unknown>) => {
+  const update = async (
+    id: string,
+    patch: Database["public"]["Tables"]["categories"]["Update"],
+  ) => {
     const { error } = await supabase.from("categories").update(patch).eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     refresh();
     void qc.invalidateQueries({ queryKey: ["categories"] });
   };
 
   const remove = async (id: string) => {
     const { error } = await supabase.from("categories").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     refresh();
   };
 
@@ -307,7 +311,7 @@ function Settings() {
 
   const save = async () => {
     const { error } = await supabase.from("studio_settings").update(values).eq("id", true);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Studio settings saved.");
     void qc.invalidateQueries({ queryKey: ["studio-settings"] });
   };
@@ -315,9 +319,12 @@ function Settings() {
   const uploadBranding = async (kind: "logo_url" | "profile_image_url", file: File) => {
     const path = `${kind}-${Date.now()}-${file.name.replace(/[^\w.-]/g, "_")}`;
     const { error: upErr } = await supabase.storage.from("branding").upload(path, file);
-    if (upErr) return toast.error(upErr.message);
-    const { error } = await supabase.from("studio_settings").update({ [kind]: path }).eq("id", true);
-    if (error) return toast.error(error.message);
+    if (upErr) { toast.error(upErr.message); return; }
+    const { error } = await supabase
+      .from("studio_settings")
+      .update(kind === "logo_url" ? { logo_url: path } : { profile_image_url: path })
+      .eq("id", true);
+    if (error) { toast.error(error.message); return; }
     toast.success("Image updated.");
     void qc.invalidateQueries({ queryKey: ["studio-settings"] });
   };

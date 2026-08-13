@@ -109,10 +109,10 @@ function BookPage() {
       void navigate({ to: "/auth" });
       return;
     }
-    if (!startsAt || !endsAt) return toast.error("Pick a date and start time.");
-    if (startsAt.getTime() < Date.now()) return toast.error("Pick a future date and time.");
-    if (conflict) return toast.error("That slot overlaps another session (30-min buffer).");
-    if (!agreed) return toast.error("Please accept the studio guidelines.");
+    if (!startsAt || !endsAt) { toast.error("Pick a date and start time."); return; }
+    if (startsAt.getTime() < Date.now()) { toast.error("Pick a future date and time."); return; }
+    if (conflict) { toast.error("That slot overlaps another session (30-min buffer)."); return; }
+    if (!agreed) { toast.error("Please accept the studio guidelines."); return; }
 
     setBusy(true);
     try {
