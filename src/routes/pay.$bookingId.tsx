@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useStudioSettings } from "@/hooks/useStudio";
+import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { naira, formatDateTime, STATUS_LABEL } from "@/lib/format";
 
 export const Route = createFileRoute("/pay/$bookingId")({
@@ -36,7 +37,7 @@ function PayPage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: settings } = useStudioSettings();
-  const [paymentType, setPaymentType] = useState<"deposit" | "full">("deposit");
+  const [paymentType, setPaymentType] = useState<"partial" | "full">("partial");
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -74,7 +75,7 @@ function PayPage() {
       const path = `${user.id}/${bookingId}-${Date.now()}-${file.name.replace(/[^\w.-]/g, "_")}`;
       const { error: upErr } = await supabase.storage.from("receipts").upload(path, file);
       if (upErr) throw upErr;
-      const { error } = await supabase
+      const { data: updated, error } = await supabase
         .from("bookings")
         .update({
           receipt_url: path,
@@ -82,8 +83,11 @@ function PayPage() {
           balance: booking.price - amount,
           status: "pending",
         })
-        .eq("id", bookingId);
+        .eq("id", bookingId)
+        .select("id")
+        .maybeSingle();
       if (error) throw error;
+      if (!updated) throw new Error("Receipt saved but the booking could not be updated.");
       void qc.invalidateQueries({ queryKey: ["booking", bookingId] });
       toast.success("Receipt submitted — the studio manager will review it shortly.");
       void navigate({ to: "/bookings" });
@@ -141,9 +145,9 @@ function PayPage() {
           <div className="mt-3 flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={() => setPaymentType("deposit")}
+              onClick={() => setPaymentType("partial")}
               className={`rounded-md border px-4 py-2 text-sm ${
-                paymentType === "deposit" ? "border-primary bg-primary/10" : "border-border"
+                paymentType === "partial" ? "border-primary bg-primary/10" : "border-border"
               }`}
             >
               70% deposit · {naira(Math.round(booking.price * 0.7))}
@@ -175,6 +179,10 @@ function PayPage() {
           <Button className="mt-4 w-full" disabled={busy} onClick={submit}>
             Submit for approval
           </Button>
+          <WhatsAppButton
+            className="mt-3 w-full"
+            message={`Hello Genie Pro Music Studio, I have booked the ${booking.package_label} session and sent my payment.`}
+          />
         </section>
 
         <Link to="/bookings" className="block text-center text-sm text-primary hover:underline">

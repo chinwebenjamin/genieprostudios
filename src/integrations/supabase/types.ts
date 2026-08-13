@@ -61,7 +61,9 @@ export type Database = {
           agreed_terms: boolean
           balance: number
           client_id: string
+          client_name: string | null
           created_at: string
+          created_by_manager: boolean
           duration_hours: number
           ends_at: string
           id: string
@@ -80,7 +82,9 @@ export type Database = {
           agreed_terms?: boolean
           balance?: number
           client_id: string
+          client_name?: string | null
           created_at?: string
+          created_by_manager?: boolean
           duration_hours: number
           ends_at: string
           id?: string
@@ -99,7 +103,9 @@ export type Database = {
           agreed_terms?: boolean
           balance?: number
           client_id?: string
+          client_name?: string | null
           created_at?: string
+          created_by_manager?: boolean
           duration_hours?: number
           ends_at?: string
           id?: string
@@ -205,6 +211,48 @@ export type Database = {
           },
         ]
       }
+      packages: {
+        Row: {
+          active: boolean
+          created_at: string
+          excludes: string[]
+          id: string
+          includes: string[]
+          key: string
+          label: string
+          rates: Json
+          sort_order: number
+          tagline: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          excludes?: string[]
+          id?: string
+          includes?: string[]
+          key: string
+          label: string
+          rates?: Json
+          sort_order?: number
+          tagline?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          excludes?: string[]
+          id?: string
+          includes?: string[]
+          key?: string
+          label?: string
+          rates?: Json
+          sort_order?: number
+          tagline?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -238,6 +286,7 @@ export type Database = {
           logo_url: string | null
           profile_image_url: string | null
           updated_at: string
+          whatsapp_number: string
         }
         Insert: {
           account_name?: string
@@ -247,6 +296,7 @@ export type Database = {
           logo_url?: string | null
           profile_image_url?: string | null
           updated_at?: string
+          whatsapp_number?: string
         }
         Update: {
           account_name?: string
@@ -256,6 +306,7 @@ export type Database = {
           logo_url?: string | null
           profile_image_url?: string | null
           updated_at?: string
+          whatsapp_number?: string
         }
         Relationships: []
       }

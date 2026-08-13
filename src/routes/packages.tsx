@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
-import { PACKAGES } from "@/lib/packages";
+import { usePackages } from "@/hooks/usePackages";
 import { naira } from "@/lib/format";
 
 export const Route = createFileRoute("/packages")({
@@ -24,6 +24,7 @@ export const Route = createFileRoute("/packages")({
 });
 
 function PackagesPage() {
+  const { data: packages = [], isLoading } = usePackages();
   return (
     <AppShell>
       <div className="mx-auto max-w-5xl px-4 py-10">
@@ -33,7 +34,8 @@ function PackagesPage() {
         </p>
 
         <div className="mt-8 space-y-6">
-          {PACKAGES.map((p) => (
+          {isLoading && <p className="text-sm text-muted-foreground">Loading rates…</p>}
+          {packages.map((p) => (
             <article key={p.key} className="panel p-5">
               <h2 className="text-2xl">{p.label}</h2>
               <p className="mt-1 text-sm text-muted-foreground">{p.tagline}</p>
