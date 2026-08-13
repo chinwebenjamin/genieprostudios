@@ -8,6 +8,7 @@ export type StudioSettings = {
   bank_name: string;
   account_name: string;
   account_number: string;
+  whatsapp_number: string;
 };
 
 export function useStudioSettings(enabled = true) {
@@ -17,7 +18,9 @@ export function useStudioSettings(enabled = true) {
     queryFn: async (): Promise<StudioSettings | null> => {
       const { data, error } = await supabase
         .from("studio_settings")
-        .select("logo_url, profile_image_url, bank_name, account_name, account_number")
+        .select(
+          "logo_url, profile_image_url, bank_name, account_name, account_number, whatsapp_number",
+        )
         .maybeSingle();
       if (error) throw error;
       return data;
