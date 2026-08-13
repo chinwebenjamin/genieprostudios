@@ -10,8 +10,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { PACKAGES, GUIDELINES } from "@/lib/packages";
+import { GUIDELINES } from "@/lib/packages";
 import type { Period } from "@/lib/packages";
+import { usePackages } from "@/hooks/usePackages";
 import { naira, formatDateTime } from "@/lib/format";
 
 export const Route = createFileRoute("/book")({
@@ -38,22 +39,30 @@ const BUFFER_MIN = 30;
 function BookPage() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
-  const [packageKey, setPackageKey] = useState(PACKAGES[0]!.key);
+  const { data: packages = [] } = usePackages();
+  const [packageKey, setPackageKey] = useState("");
   const [period, setPeriod] = useState<Period>("day");
   const [hours, setHours] = useState(2);
   const [date, setDate] = useState("");
   const [time, setTime] = useState("10:00");
   const [selected, setSelected] = useState<Record<string, number>>({});
   const [notes, setNotes] = useState("");
+  const [clientName, setClientName] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  const pkg = PACKAGES.find((p) => p.key === packageKey)!;
-  const rates = pkg.rates[period];
-  const rate = rates.find((r) => r.hours === hours) ?? rates[0]!;
+  const pkg = packages.find((p) => p.key === packageKey) ?? packages[0];
+  const rates = pkg?.rates[period] ?? [];
+  const rate = rates.find((r) => r.hours === hours) ?? rates[0] ?? { hours: 2, price: 0 };
 
   useEffect(() => {
-    if (!rates.some((r) => r.hours === hours)) setHours(rates[0]!.hours);
+    const meta = user?.user_metadata as { full_name?: string; name?: string } | undefined;
+    const suggested = meta?.full_name ?? meta?.name ?? "";
+    if (suggested) setClientName((n) => n || suggested);
+  }, [user]);
+
+  useEffect(() => {
+    if (rates.length && !rates.some((r) => r.hours === hours)) setHours(rates[0]!.hours);
   }, [rates, hours]);
 
   const { data: categories = [] } = useQuery({
@@ -110,6 +119,8 @@ function BookPage() {
       return;
     }
     if (!startsAt || !endsAt) { toast.error("Pick a date and start time."); return; }
+    if (!pkg) { toast.error("Choose a package."); return; }
+    if (!clientName.trim()) { toast.error("Enter your name for the booking."); return; }
     if (startsAt.getTime() < Date.now()) { toast.error("Pick a future date and time."); return; }
     if (conflict) { toast.error("That slot overlaps another session (30-min buffer)."); return; }
     if (!agreed) { toast.error("Please accept the studio guidelines."); return; }
@@ -120,6 +131,7 @@ function BookPage() {
         .from("bookings")
         .insert({
           client_id: user.id,
+          client_name: clientName.trim(),
           package_key: pkg.key,
           package_label: pkg.label,
           period,
@@ -190,13 +202,13 @@ function BookPage() {
           <section className="panel p-5">
             <h2 className="text-xl">1 · Package</h2>
             <div className="mt-3 grid gap-2 sm:grid-cols-2">
-              {PACKAGES.map((p) => (
+              {packages.map((p) => (
                 <button
                   key={p.key}
                   type="button"
                   onClick={() => setPackageKey(p.key)}
                   className={`rounded-lg border p-3 text-left transition-colors ${
-                    p.key === packageKey
+                    p.key === pkg?.key
                       ? "border-primary bg-primary/10"
                       : "border-border hover:border-primary/50"
                   }`}
@@ -205,6 +217,9 @@ function BookPage() {
                   <p className="text-xs text-muted-foreground">{p.tagline}</p>
                 </button>
               ))}
+              {packages.length === 0 && (
+                <p className="text-sm text-muted-foreground">No packages available yet.</p>
+              )}
             </div>
           </section>
 
@@ -326,6 +341,15 @@ function BookPage() {
 
           <section className="panel p-5">
             <h2 className="text-xl">5 · Notes & terms</h2>
+            <div className="mt-3 space-y-1.5">
+              <Label htmlFor="clientName">Your name</Label>
+              <Input
+                id="clientName"
+                placeholder="Name to put on this booking"
+                value={clientName}
+                onChange={(e) => setClientName(e.target.value)}
+              />
+            </div>
             <Textarea
               className="mt-3"
               placeholder="Anything the studio should know (crew size, special setup, add-on enquiries)…"
@@ -353,7 +377,8 @@ function BookPage() {
         <aside className="h-fit lg:sticky lg:top-24">
           <div className="panel space-y-2 p-5">
             <h2 className="text-xl">Summary</h2>
-            <Row label="Package" value={pkg.label} />
+            <Row label="Name" value={clientName || "—"} />
+            <Row label="Package" value={pkg?.label ?? "—"} />
             <Row label="Period" value={period} />
             <Row
               label="Duration"
