@@ -81,8 +81,10 @@ function ManagerPage() {
             <BookingList statuses={["confirmed", "completed", "declined"]} />
           </TabsContent>
           <TabsContent value="inventory" className="mt-4">
-            <></>
             <Inventory />
+          </TabsContent>
+          <TabsContent value="packages" className="mt-4">
+            <PackagesAdmin />
           </TabsContent>
           <TabsContent value="settings" className="mt-4">
             <Settings />
