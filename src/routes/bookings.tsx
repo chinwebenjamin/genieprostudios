@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { naira, formatDateTime, STATUS_LABEL } from "@/lib/format";
 
 export const Route = createFileRoute("/bookings")({
@@ -66,6 +67,11 @@ function BookingsPage() {
           </Button>
         </div>
 
+        <WhatsAppButton
+          className="mt-4"
+          message="Hello Genie Pro Music Studio, I have a question about my booking."
+        />
+
         {isLoading && <p className="mt-6 text-sm text-muted-foreground">Loading…</p>}
         {!isLoading && data.length === 0 && (
           <p className="mt-6 text-sm text-muted-foreground">
@@ -121,6 +127,9 @@ function BookingsPage() {
                     Complete payment
                   </Link>
                 </Button>
+              )}
+              {b.client_name && (
+                <p className="mt-2 text-xs text-muted-foreground">Booked for {b.client_name}</p>
               )}
             </article>
           ))}
