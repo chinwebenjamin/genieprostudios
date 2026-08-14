@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
 import { useStudioSettings, useSignedUrl } from "@/hooks/useStudio";
+import { PackagesAdmin } from "@/components/manager/PackagesAdmin";
 import { naira, formatDateTime, STATUS_LABEL } from "@/lib/format";
 
 export const Route = createFileRoute("/manager")({
@@ -69,6 +70,7 @@ function ManagerPage() {
           <TabsList>
             <TabsTrigger value="requests">Requests</TabsTrigger>
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
+            <TabsTrigger value="packages">Packages</TabsTrigger>
             <TabsTrigger value="inventory">Inventory</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
@@ -79,6 +81,7 @@ function ManagerPage() {
             <BookingList statuses={["confirmed", "completed", "declined"]} />
           </TabsContent>
           <TabsContent value="inventory" className="mt-4">
+            <></>
             <Inventory />
           </TabsContent>
           <TabsContent value="settings" className="mt-4">
