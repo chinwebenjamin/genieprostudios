@@ -9,6 +9,8 @@ export type StudioSettings = {
   account_name: string;
   account_number: string;
   whatsapp_number: string;
+  guidelines: string[];
+  project_terms: string[];
 };
 
 export function useStudioSettings(enabled = true) {
@@ -19,7 +21,7 @@ export function useStudioSettings(enabled = true) {
       const { data, error } = await supabase
         .from("studio_settings")
         .select(
-          "logo_url, profile_image_url, bank_name, account_name, account_number, whatsapp_number",
+          "logo_url, profile_image_url, bank_name, account_name, account_number, whatsapp_number, guidelines, project_terms",
         )
         .maybeSingle();
       if (error) throw error;
