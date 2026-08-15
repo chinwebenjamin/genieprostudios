@@ -13,6 +13,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
 import { useStudioSettings, useSignedUrl } from "@/hooks/useStudio";
 import { PackagesAdmin } from "@/components/manager/PackagesAdmin";
+import { NewBookingForm } from "@/components/manager/NewBookingForm";
 import { naira, formatDateTime, STATUS_LABEL } from "@/lib/format";
 
 export const Route = createFileRoute("/manager")({
@@ -69,6 +70,7 @@ function ManagerPage() {
         <Tabs defaultValue="requests" className="mt-6">
           <TabsList>
             <TabsTrigger value="requests">Requests</TabsTrigger>
+            <TabsTrigger value="new">New booking</TabsTrigger>
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
             <TabsTrigger value="packages">Packages</TabsTrigger>
             <TabsTrigger value="inventory">Inventory</TabsTrigger>
@@ -76,6 +78,9 @@ function ManagerPage() {
           </TabsList>
           <TabsContent value="requests" className="mt-4">
             <BookingList statuses={["pending", "awaiting_payment"]} actions />
+          </TabsContent>
+          <TabsContent value="new" className="mt-4">
+            <NewBookingForm />
           </TabsContent>
           <TabsContent value="schedule" className="mt-4">
             <BookingList statuses={["confirmed", "completed", "declined"]} />
@@ -106,7 +111,15 @@ function BookingList({ statuses, actions }: { statuses: string[]; actions?: bool
         .in("status", statuses)
         .order("starts_at", { ascending: true });
       if (error) throw error;
-      return data;
+      const now = Date.now();
+      return [...(data ?? [])].sort((a, b) => {
+        const af = new Date(a.starts_at).getTime();
+        const bf = new Date(b.starts_at).getTime();
+        const aUpcoming = af >= now;
+        const bUpcoming = bf >= now;
+        if (aUpcoming !== bUpcoming) return aUpcoming ? -1 : 1;
+        return aUpcoming ? af - bf : bf - af;
+      });
     },
   });
 
@@ -131,6 +144,9 @@ function BookingList({ statuses, actions }: { statuses: string[]; actions?: bool
                 {formatDateTime(b.starts_at)} → {formatDateTime(b.ends_at)} · {b.duration_hours}hrs{" "}
                 {b.period}
               </p>
+              {b.client_name && (
+                <p className="text-xs text-muted-foreground">Client: {b.client_name}</p>
+              )}
             </div>
             <Badge variant={b.status === "confirmed" ? "default" : "secondary"}>
               {STATUS_LABEL[b.status] ?? b.status}
