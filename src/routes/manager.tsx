@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -130,6 +131,14 @@ function BookingList({ statuses, actions }: { statuses: string[]; actions?: bool
     void qc.invalidateQueries({ queryKey: ["manager-bookings"] });
   };
 
+  const remove = async (id: string) => {
+    if (!window.confirm("Delete this session permanently? This cannot be undone.")) return;
+    const { error } = await supabase.from("bookings").delete().eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Session deleted.");
+    void qc.invalidateQueries({ queryKey: ["manager-bookings"] });
+  };
+
   if (isLoading) return <p className="text-sm text-muted-foreground">Loading…</p>;
   if (!data.length) return <p className="text-sm text-muted-foreground">Nothing here yet.</p>;
 
@@ -162,20 +171,25 @@ function BookingList({ statuses, actions }: { statuses: string[]; actions?: bool
           )}
           {b.notes && <p className="mt-1 text-xs text-muted-foreground">Notes: {b.notes}</p>}
           <ReceiptLink path={b.receipt_url} />
-          {actions && (
-            <div className="mt-4 flex flex-wrap gap-2">
-              <Button size="sm" onClick={() => void setStatus(b.id, "confirmed")}>
-                Approve & confirm
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => void setStatus(b.id, "declined")}
-              >
-                Decline
-              </Button>
-            </div>
-          )}
+          <div className="mt-4 flex flex-wrap gap-2">
+            {actions && (
+              <>
+                <Button size="sm" onClick={() => void setStatus(b.id, "confirmed")}>
+                  Approve & confirm
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => void setStatus(b.id, "declined")}
+                >
+                  Decline
+                </Button>
+              </>
+            )}
+            <Button size="sm" variant="destructive" onClick={() => void remove(b.id)}>
+              Delete session
+            </Button>
+          </div>
         </article>
       ))}
     </div>
