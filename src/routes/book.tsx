@@ -366,7 +366,7 @@ function BookPage() {
             <details className="mt-3 text-xs text-muted-foreground">
               <summary className="cursor-pointer text-primary">Read the guidelines</summary>
               <ol className="mt-2 list-decimal space-y-1 pl-5">
-                {GUIDELINES.map((g) => (
+                {(settings?.guidelines?.length ? settings.guidelines : GUIDELINES).map((g) => (
                   <li key={g}>{g}</li>
                 ))}
               </ol>
