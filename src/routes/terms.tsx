@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { GUIDELINES, PROJECT_TERMS } from "@/lib/packages";
+import { useStudioSettings } from "@/hooks/useStudio";
 
 export const Route = createFileRoute("/terms")({
   head: () => ({
@@ -22,6 +23,9 @@ export const Route = createFileRoute("/terms")({
 });
 
 function TermsPage() {
+  const { data } = useStudioSettings();
+  const guidelines = data?.guidelines?.length ? data.guidelines : GUIDELINES;
+  const terms = data?.project_terms?.length ? data.project_terms : PROJECT_TERMS;
   return (
     <AppShell>
       <div className="mx-auto max-w-3xl px-4 py-10">
@@ -29,14 +33,14 @@ function TermsPage() {
 
         <h2 className="mt-8 text-2xl text-primary">Studio guidelines</h2>
         <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-muted-foreground">
-          {GUIDELINES.map((g) => (
+          {guidelines.map((g) => (
             <li key={g}>{g}</li>
           ))}
         </ol>
 
         <h2 className="mt-8 text-2xl text-primary">Project management terms</h2>
         <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-muted-foreground">
-          {PROJECT_TERMS.map((t) => (
+          {terms.map((t) => (
             <li key={t}>{t}</li>
           ))}
         </ol>

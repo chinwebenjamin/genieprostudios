@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -93,6 +94,7 @@ function ManagerPage() {
           </TabsContent>
           <TabsContent value="settings" className="mt-4">
             <Settings />
+            <TermsAdmin />
           </TabsContent>
         </Tabs>
       </div>
@@ -130,6 +132,14 @@ function BookingList({ statuses, actions }: { statuses: string[]; actions?: bool
     void qc.invalidateQueries({ queryKey: ["manager-bookings"] });
   };
 
+  const remove = async (id: string) => {
+    if (!window.confirm("Delete this session permanently? This cannot be undone.")) return;
+    const { error } = await supabase.from("bookings").delete().eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Session deleted.");
+    void qc.invalidateQueries({ queryKey: ["manager-bookings"] });
+  };
+
   if (isLoading) return <p className="text-sm text-muted-foreground">Loading…</p>;
   if (!data.length) return <p className="text-sm text-muted-foreground">Nothing here yet.</p>;
 
@@ -162,20 +172,25 @@ function BookingList({ statuses, actions }: { statuses: string[]; actions?: bool
           )}
           {b.notes && <p className="mt-1 text-xs text-muted-foreground">Notes: {b.notes}</p>}
           <ReceiptLink path={b.receipt_url} />
-          {actions && (
-            <div className="mt-4 flex flex-wrap gap-2">
-              <Button size="sm" onClick={() => void setStatus(b.id, "confirmed")}>
-                Approve & confirm
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => void setStatus(b.id, "declined")}
-              >
-                Decline
-              </Button>
-            </div>
-          )}
+          <div className="mt-4 flex flex-wrap gap-2">
+            {actions && (
+              <>
+                <Button size="sm" onClick={() => void setStatus(b.id, "confirmed")}>
+                  Approve & confirm
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => void setStatus(b.id, "declined")}
+                >
+                  Decline
+                </Button>
+              </>
+            )}
+            <Button size="sm" variant="destructive" onClick={() => void remove(b.id)}>
+              Delete session
+            </Button>
+          </div>
         </article>
       ))}
     </div>
@@ -319,6 +334,62 @@ function Inventory() {
 }
 
 function Settings() {
+  return <SettingsInner />;
+}
+
+function TermsAdmin() {
+  const qc = useQueryClient();
+  const { data } = useStudioSettings();
+  const [guidelines, setGuidelines] = useState<string | null>(null);
+  const [terms, setTerms] = useState<string | null>(null);
+
+  const gValue = guidelines ?? (data?.guidelines ?? []).join("\n");
+  const tValue = terms ?? (data?.project_terms ?? []).join("\n");
+
+  const save = async () => {
+    const toList = (v: string) =>
+      v.split("\n").map((s) => s.trim()).filter(Boolean);
+    const { error } = await supabase
+      .from("studio_settings")
+      .update({ guidelines: toList(gValue), project_terms: toList(tValue) })
+      .eq("id", true);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Guidelines and terms updated.");
+    void qc.invalidateQueries({ queryKey: ["studio-settings"] });
+  };
+
+  return (
+    <div className="panel mt-4 p-5">
+      <h2 className="text-xl">Guidelines & terms</h2>
+      <p className="mt-1 text-xs text-muted-foreground">One item per line.</p>
+      <div className="mt-3 space-y-4">
+        <div className="space-y-1.5">
+          <Label htmlFor="guidelines">Studio guidelines</Label>
+          <Textarea
+            id="guidelines"
+            rows={10}
+            value={gValue}
+            onChange={(e) => setGuidelines(e.target.value)}
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="terms">Project management terms</Label>
+          <Textarea
+            id="terms"
+            rows={6}
+            value={tValue}
+            onChange={(e) => setTerms(e.target.value)}
+          />
+        </div>
+      </div>
+      <Button className="mt-4" onClick={save}>
+        Save guidelines & terms
+      </Button>
+    </div>
+  );
+}
+
+function SettingsInner() {
   const qc = useQueryClient();
   const { data } = useStudioSettings();
   const [bank, setBank] = useState<{ bank_name: string; account_name: string; account_number: string } | null>(
