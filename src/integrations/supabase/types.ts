@@ -282,9 +282,11 @@ export type Database = {
           account_name: string
           account_number: string
           bank_name: string
+          guidelines: string[]
           id: boolean
           logo_url: string | null
           profile_image_url: string | null
+          project_terms: string[]
           updated_at: string
           whatsapp_number: string
         }
@@ -292,9 +294,11 @@ export type Database = {
           account_name?: string
           account_number?: string
           bank_name?: string
+          guidelines?: string[]
           id?: boolean
           logo_url?: string | null
           profile_image_url?: string | null
+          project_terms?: string[]
           updated_at?: string
           whatsapp_number?: string
         }
@@ -302,9 +306,11 @@ export type Database = {
           account_name?: string
           account_number?: string
           bank_name?: string
+          guidelines?: string[]
           id?: boolean
           logo_url?: string | null
           profile_image_url?: string | null
+          project_terms?: string[]
           updated_at?: string
           whatsapp_number?: string
         }
