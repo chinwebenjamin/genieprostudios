@@ -334,6 +334,62 @@ function Inventory() {
 }
 
 function Settings() {
+  return <SettingsInner />;
+}
+
+function TermsAdmin() {
+  const qc = useQueryClient();
+  const { data } = useStudioSettings();
+  const [guidelines, setGuidelines] = useState<string | null>(null);
+  const [terms, setTerms] = useState<string | null>(null);
+
+  const gValue = guidelines ?? (data?.guidelines ?? []).join("\n");
+  const tValue = terms ?? (data?.project_terms ?? []).join("\n");
+
+  const save = async () => {
+    const toList = (v: string) =>
+      v.split("\n").map((s) => s.trim()).filter(Boolean);
+    const { error } = await supabase
+      .from("studio_settings")
+      .update({ guidelines: toList(gValue), project_terms: toList(tValue) })
+      .eq("id", true);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Guidelines and terms updated.");
+    void qc.invalidateQueries({ queryKey: ["studio-settings"] });
+  };
+
+  return (
+    <div className="panel mt-4 p-5">
+      <h2 className="text-xl">Guidelines & terms</h2>
+      <p className="mt-1 text-xs text-muted-foreground">One item per line.</p>
+      <div className="mt-3 space-y-4">
+        <div className="space-y-1.5">
+          <Label htmlFor="guidelines">Studio guidelines</Label>
+          <Textarea
+            id="guidelines"
+            rows={10}
+            value={gValue}
+            onChange={(e) => setGuidelines(e.target.value)}
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="terms">Project management terms</Label>
+          <Textarea
+            id="terms"
+            rows={6}
+            value={tValue}
+            onChange={(e) => setTerms(e.target.value)}
+          />
+        </div>
+      </div>
+      <Button className="mt-4" onClick={save}>
+        Save guidelines & terms
+      </Button>
+    </div>
+  );
+}
+
+function SettingsInner() {
   const qc = useQueryClient();
   const { data } = useStudioSettings();
   const [bank, setBank] = useState<{ bank_name: string; account_name: string; account_number: string } | null>(
