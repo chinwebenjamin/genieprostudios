@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { GUIDELINES } from "@/lib/packages";
+import { useStudioSettings } from "@/hooks/useStudio";
 import type { Period } from "@/lib/packages";
 import { usePackages } from "@/hooks/usePackages";
 import { naira, formatDateTime } from "@/lib/format";
@@ -367,7 +368,7 @@ function BookPage() {
             <details className="mt-3 text-xs text-muted-foreground">
               <summary className="cursor-pointer text-primary">Read the guidelines</summary>
               <ol className="mt-2 list-decimal space-y-1 pl-5">
-                {(settings?.guidelines?.length ? settings.guidelines : GUIDELINES).map((g) => (
+                {(studio?.guidelines?.length ? studio.guidelines : GUIDELINES).map((g: string) => (
                   <li key={g}>{g}</li>
                 ))}
               </ol>
