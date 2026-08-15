@@ -40,6 +40,7 @@ function BookPage() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const { data: packages = [] } = usePackages();
+  const { data: studio } = useStudioSettings();
   const [packageKey, setPackageKey] = useState("");
   const [period, setPeriod] = useState<Period>("day");
   const [hours, setHours] = useState(2);
