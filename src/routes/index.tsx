@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { CalendarClock, ShieldCheck, Sliders, BellRing } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
-import { PACKAGES } from "@/lib/packages";
+import { usePackages } from "@/hooks/usePackages";
 import { naira } from "@/lib/format";
 
 export const Route = createFileRoute("/")({
@@ -26,6 +26,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const { data: packages = [], isLoading } = usePackages();
   return (
     <AppShell>
       <section className="mx-auto max-w-6xl px-4 pb-14 pt-12 sm:pt-20">
@@ -67,20 +68,28 @@ function Index() {
         ))}
       </section>
 
+      {(isLoading || packages.length > 0) && (
       <section className="mx-auto max-w-6xl px-4 pb-20">
         <h2 className="display-title text-3xl sm:text-4xl">Packages</h2>
+        {isLoading && <p className="mt-4 text-sm text-muted-foreground">Loading packages…</p>}
         <div className="mt-6 grid gap-4 md:grid-cols-2">
-          {PACKAGES.map((p) => (
+          {packages.map((p) => (
             <div key={p.key} className="panel flex flex-col p-5">
               <h3 className="text-2xl">{p.label}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{p.tagline}</p>
-              <p className="mt-4 text-sm">
-                <span className="text-muted-foreground">From </span>
-                <span className="font-semibold text-primary">
-                  {naira(Math.min(...p.rates.day.map((r) => r.price), ...p.rates.night.map((r) => r.price)))}
-                </span>
-                <span className="text-muted-foreground"> / 2hrs</span>
-              </p>
+              {(() => {
+                const prices = [
+                  ...p.rates.day.map((r) => r.price),
+                  ...p.rates.night.map((r) => r.price),
+                ];
+                if (prices.length === 0) return null;
+                return (
+                  <p className="mt-4 text-sm">
+                    <span className="text-muted-foreground">From </span>
+                    <span className="font-semibold text-primary">{naira(Math.min(...prices))}</span>
+                  </p>
+                );
+              })()}
               <Button variant="outline" className="mt-4 self-start" asChild>
                 <Link to="/packages">Details</Link>
               </Button>
@@ -88,6 +97,7 @@ function Index() {
           ))}
         </div>
       </section>
+      )}
     </AppShell>
   );
 }
