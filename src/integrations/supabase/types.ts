@@ -339,7 +339,36 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      studio_public: {
+        Row: {
+          guidelines: string[] | null
+          id: boolean | null
+          logo_url: string | null
+          profile_image_url: string | null
+          project_terms: string[] | null
+          updated_at: string | null
+          whatsapp_number: string | null
+        }
+        Insert: {
+          guidelines?: string[] | null
+          id?: boolean | null
+          logo_url?: string | null
+          profile_image_url?: string | null
+          project_terms?: string[] | null
+          updated_at?: string | null
+          whatsapp_number?: string | null
+        }
+        Update: {
+          guidelines?: string[] | null
+          id?: boolean | null
+          logo_url?: string | null
+          profile_image_url?: string | null
+          project_terms?: string[] | null
+          updated_at?: string | null
+          whatsapp_number?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       busy_slots: {
