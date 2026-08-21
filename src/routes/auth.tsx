@@ -82,6 +82,7 @@ function AuthPage() {
         if (error) throw error;
       }
 
+      let granted = false;
       if (invite.trim()) {
         const { data, error } = await supabase.rpc("redeem_manager_invite", {
           _code: invite.trim(),
@@ -90,11 +91,17 @@ function AuthPage() {
         if (!data) {
           toast.error("That invite code is not valid.");
         } else {
+          granted = true;
           toast.success("Manager access granted.");
         }
       }
       await refreshRole();
-      void navigate({ to: "/bookings" });
+      const { data: roleRows } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("role", "manager");
+      const isManager = granted || (roleRows?.length ?? 0) > 0;
+      void navigate({ to: isManager ? "/manager" : "/bookings" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Something went wrong");
     } finally {
