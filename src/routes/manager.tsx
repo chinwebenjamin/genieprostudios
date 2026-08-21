@@ -95,6 +95,7 @@ function ManagerPage() {
           <TabsContent value="settings" className="mt-4">
             <Settings />
             <TermsAdmin />
+            <ChangePassword />
           </TabsContent>
         </Tabs>
       </div>
