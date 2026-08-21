@@ -14,6 +14,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/hooks/useAuth";
 import { useStudioSettings, useSignedUrl } from "@/hooks/useStudio";
 import { PackagesAdmin } from "@/components/manager/PackagesAdmin";
+import { ChangePassword } from "@/components/manager/ChangePassword";
 import { NewBookingForm } from "@/components/manager/NewBookingForm";
 import { naira, formatDateTime, STATUS_LABEL } from "@/lib/format";
 
