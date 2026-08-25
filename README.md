@@ -11,8 +11,8 @@
 ## 1. User Roles
 
 ### Manager
-- Primary admin account: username `admin`, password `12334566` (changeable after first login).
-- Admin can generate a **permanent, reusable invite/secret code** (`54953947`) â€” any new manager uses this once during registration to gain manager access. This applies even if the new manager signs in via Google â€” Google handles identity, but the invite code is what actually grants manager-level permissions.
+- Primary admin account: username `=====`, password `=======-=6` (changeable after first login).
+- Admin can generate a **permanent, reusable invite/secret code** (`=======`) â€” any new manager uses this once during registration to gain manager access. This applies even if the new manager signs in via Google â€” Google handles identity, but the invite code is what actually grants manager-level permissions.
 - Can view/review all bookings across all clients.
 - Can create and manage **equipment/service categories** and their **quantities** (e.g. how many of each mic type, keyboards, etc). If a category is deleted, clients immediately lose access/visibility to it.
 - Verifies payment receipts and approves/declines pending bookings (see Section 4).
@@ -89,29 +89,7 @@ If a session is booked with less lead time than the standard schedule (e.g. book
 
 All prices in Nigerian Naira (â‚¦). Each package has separate Day and Night hourly rates.
 
-### Package 1: Rehearsal Package
-- Includes stereo recording and full access to studio facilities.
-- Excludes production lights. Cameras not permitted.
-- **Day:** 2hrs â‚¦60,000 Â· 4hrs â‚¦110,000 Â· 6hrs â‚¦140,000 Â· Full day (12hrs) â‚¦280,000
-- **Night:** 2hrs â‚¦60,000 Â· 4hrs â‚¦90,000 Â· 6hrs â‚¦120,000
 
-### Package 2: Virtual Package (Facebook or YouTube Live)
-- Includes stereo recording, studio facilities, and production lights.
-- Does not include video livestreaming by default. One-camera-angle HD livestream to one social platform available on request for â‚¦70,000/2hrs.
-- **Day:** 2hrs â‚¦80,000 Â· 4hrs â‚¦140,000 Â· 6hrs â‚¦180,000
-- **Night:** 2hrs â‚¦80,000 Â· 4hrs â‚¦140,000 Â· 6hrs â‚¦180,000
-
-### Package 3: Freelance Producer / Video Filming Package (Extracurricular)
-- Includes stereo recording, studio facilities, and production lights.
-- Client must bring their own producer/video director for this session type.
-- **Day:** 2hrs â‚¦80,000 Â· 4hrs â‚¦140,000 Â· 6hrs â‚¦180,000
-- **Night:** 2hrs â‚¦80,000 Â· 4hrs â‚¦140,000 Â· 6hrs â‚¦180,000
-
-### Package 4: Multitrack Recording Without Screen
-- Includes stereo & multi-track recording, studio facilities, and production lights (RGB, Beam & Key lights).
-- Excludes video coverage, mixing & mastering, and post-production. Videographers available on request/negotiation.
-- **Day:** 2hrs â‚¦100,000 Â· 4hrs â‚¦180,000 Â· 6hrs â‚¦280,000 Â· Full day (12hrs) â‚¦600,000
-- **Night:** 2hrs â‚¦100,000 Â· 4hrs â‚¦180,000 Â· 6hrs â‚¦280,000
 
 ### Studio Guidelines (to reflect in app copy / booking terms)
 - Minimum 70% payment required to secure a booking (full payment required before studio access).
