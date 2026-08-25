@@ -140,9 +140,6 @@ All prices in Nigerian Naira (â‚¦). Each package has separate Day and Night 
 
 ---
 
-*This document is meant to be pasted as the initial prompt into Lovable (or edited further) to scaffold the app in one pass.*
-
-This project was built with [Lovable](https://lovable.dev).
 
 **Live app**: https://genieprostudios.lovable.app
 
