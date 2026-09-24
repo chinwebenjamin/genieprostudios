@@ -97,7 +97,7 @@ export const PACKAGES: StudioPackage[] = [
 ];
 
 export const GUIDELINES = [
-  "Minimum 70% payment is required to secure a booking. Full payment is required before studio access.",
+  "Full payment is required to secure a booking and before studio access.",
   "Prices are fixed and non-negotiable.",
   "Payments are accepted only to the official company account. Payments to any other recipient are at the client's own risk.",
   "Advance booking is required — availability is not guaranteed without it.",
