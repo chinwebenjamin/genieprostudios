@@ -1,0 +1,2 @@
+alter table public.bookings add column if not exists client_whatsapp text;
+update public.studio_settings set guidelines = array(select case when g ilike '%70%%payment%' then 'Full payment is required to secure a booking and before studio access.' else g end from unnest(guidelines) g);

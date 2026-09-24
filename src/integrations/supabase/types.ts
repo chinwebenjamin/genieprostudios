@@ -62,6 +62,7 @@ export type Database = {
           balance: number
           client_id: string
           client_name: string | null
+          client_whatsapp: string | null
           created_at: string
           created_by_manager: boolean
           duration_hours: number
@@ -83,6 +84,7 @@ export type Database = {
           balance?: number
           client_id: string
           client_name?: string | null
+          client_whatsapp?: string | null
           created_at?: string
           created_by_manager?: boolean
           duration_hours: number
@@ -104,6 +106,7 @@ export type Database = {
           balance?: number
           client_id?: string
           client_name?: string | null
+          client_whatsapp?: string | null
           created_at?: string
           created_by_manager?: boolean
           duration_hours?: number
