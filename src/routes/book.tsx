@@ -14,7 +14,7 @@ import { GUIDELINES } from "@/lib/packages";
 import { useStudioSettings } from "@/hooks/useStudio";
 import type { Period } from "@/lib/packages";
 import { usePackages } from "@/hooks/usePackages";
-import { naira, formatDateTime } from "@/lib/format";
+import { naira, formatDateTime, toWhatsAppDigits } from "@/lib/format";
 
 export const Route = createFileRoute("/book")({
   head: () => ({
@@ -50,6 +50,7 @@ function BookPage() {
   const [selected, setSelected] = useState<Record<string, number>>({});
   const [notes, setNotes] = useState("");
   const [clientName, setClientName] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [busy, setBusy] = useState(false);
 
@@ -123,6 +124,7 @@ function BookPage() {
     if (!startsAt || !endsAt) { toast.error("Pick a date and start time."); return; }
     if (!pkg) { toast.error("Choose a package."); return; }
     if (!clientName.trim()) { toast.error("Enter your name for the booking."); return; }
+    if (toWhatsAppDigits(whatsapp).length < 10) { toast.error("Enter a valid WhatsApp number."); return; }
     if (startsAt.getTime() < Date.now()) { toast.error("Pick a future date and time."); return; }
     if (conflict) { toast.error("That slot overlaps another session (30-min buffer)."); return; }
     if (!agreed) { toast.error("Please accept the studio guidelines."); return; }
@@ -134,6 +136,7 @@ function BookPage() {
         .insert({
           client_id: user.id,
           client_name: clientName.trim(),
+          client_whatsapp: whatsapp.trim(),
           package_key: pkg.key,
           package_label: pkg.label,
           period,
@@ -352,6 +355,17 @@ function BookPage() {
                 onChange={(e) => setClientName(e.target.value)}
               />
             </div>
+            <div className="mt-3 space-y-1.5">
+              <Label htmlFor="clientWhatsapp">WhatsApp number (required)</Label>
+              <Input
+                id="clientWhatsapp"
+                type="tel"
+                required
+                placeholder="e.g. 08012345678"
+                value={whatsapp}
+                onChange={(e) => setWhatsapp(e.target.value)}
+              />
+            </div>
             <Textarea
               className="mt-3"
               placeholder="Anything the studio should know (crew size, special setup, add-on enquiries)…"
@@ -361,8 +375,8 @@ function BookPage() {
             <label className="mt-4 flex items-start gap-3 text-sm">
               <Checkbox checked={agreed} onCheckedChange={(v) => setAgreed(v === true)} />
               <span className="text-muted-foreground">
-                I have read and accept the studio guidelines, including the 70% minimum payment and
-                the 25% rescheduling charge.
+                I have read and accept the studio guidelines, including full payment before the session
+                and the 25% rescheduling charge.
               </span>
             </label>
             <details className="mt-3 text-xs text-muted-foreground">
@@ -390,7 +404,6 @@ function BookPage() {
             <Row label="Ends" value={endsAt ? formatDateTime(endsAt) : "—"} />
             <div className="border-t border-border pt-3">
               <Row label="Total" value={naira(rate.price)} strong />
-              <Row label="70% deposit" value={naira(Math.round(rate.price * 0.7))} />
             </div>
             <Button className="mt-3 w-full" disabled={busy || conflict} onClick={submit}>
               Continue to payment

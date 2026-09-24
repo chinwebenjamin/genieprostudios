@@ -16,7 +16,8 @@ import { useStudioSettings, useSignedUrl } from "@/hooks/useStudio";
 import { PackagesAdmin } from "@/components/manager/PackagesAdmin";
 import { ChangePassword } from "@/components/manager/ChangePassword";
 import { NewBookingForm } from "@/components/manager/NewBookingForm";
-import { naira, formatDateTime, STATUS_LABEL } from "@/lib/format";
+import { naira, formatDateTime, STATUS_LABEL, whatsAppLink } from "@/lib/format";
+import { CustomersList } from "@/components/manager/CustomersList";
 
 export const Route = createFileRoute("/manager")({
   head: () => ({
@@ -70,10 +71,12 @@ function ManagerPage() {
       <div className="mx-auto max-w-5xl px-4 py-10">
         <h1 className="display-title text-4xl">Manager dashboard</h1>
         <Tabs defaultValue="requests" className="mt-6">
-          <TabsList>
+          <TabsList className="h-auto flex-wrap">
             <TabsTrigger value="requests">Requests</TabsTrigger>
             <TabsTrigger value="new">New booking</TabsTrigger>
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
+            <TabsTrigger value="completed">Completed</TabsTrigger>
+            <TabsTrigger value="customers">Customers</TabsTrigger>
             <TabsTrigger value="packages">Packages</TabsTrigger>
             <TabsTrigger value="inventory">Inventory</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
@@ -85,7 +88,13 @@ function ManagerPage() {
             <NewBookingForm />
           </TabsContent>
           <TabsContent value="schedule" className="mt-4">
-            <BookingList statuses={["confirmed", "completed", "declined"]} />
+            <BookingList statuses={["confirmed", "declined"]} />
+          </TabsContent>
+          <TabsContent value="completed" className="mt-4">
+            <BookingList statuses={["completed"]} />
+          </TabsContent>
+          <TabsContent value="customers" className="mt-4">
+            <CustomersList />
           </TabsContent>
           <TabsContent value="inventory" className="mt-4">
             <Inventory />
@@ -159,8 +168,21 @@ function BookingList({ statuses, actions }: { statuses: string[]; actions?: bool
               {b.client_name && (
                 <p className="text-xs text-muted-foreground">Client: {b.client_name}</p>
               )}
+              {b.client_whatsapp && (
+                <p className="text-xs text-muted-foreground">
+                  WhatsApp:{" "}
+                  <a
+                    href={whatsAppLink(b.client_whatsapp) ?? "#"}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-primary hover:underline"
+                  >
+                    {b.client_whatsapp}
+                  </a>
+                </p>
+              )}
             </div>
-            <Badge variant={b.status === "confirmed" ? "default" : "secondary"}>
+            <Badge variant={b.status === "confirmed" || b.status === "completed" ? "default" : "secondary"}>
               {STATUS_LABEL[b.status] ?? b.status}
             </Badge>
           </div>
@@ -188,6 +210,11 @@ function BookingList({ statuses, actions }: { statuses: string[]; actions?: bool
                   Decline
                 </Button>
               </>
+            )}
+            {b.status === "confirmed" && (
+              <Button size="sm" variant="outline" onClick={() => void setStatus(b.id, "completed")}>
+                Mark as Completed
+              </Button>
             )}
             <Button size="sm" variant="destructive" onClick={() => void remove(b.id)}>
               Delete session

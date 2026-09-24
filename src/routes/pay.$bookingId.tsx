@@ -37,7 +37,6 @@ function PayPage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: settings } = useStudioSettings();
-  const [paymentType, setPaymentType] = useState<"partial" | "full">("partial");
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -65,7 +64,6 @@ function PayPage() {
     );
   }
 
-  const amount = paymentType === "full" ? booking.price : Math.round(booking.price * 0.7);
 
   const submit = async () => {
     if (!file) { toast.error("Upload your transfer receipt."); return; }
@@ -79,8 +77,8 @@ function PayPage() {
         .from("bookings")
         .update({
           receipt_url: path,
-          payment_type: paymentType,
-          balance: booking.price - amount,
+          payment_type: "full",
+          balance: 0,
           status: "pending",
         })
         .eq("id", bookingId)
@@ -142,29 +140,11 @@ function PayPage() {
 
         <section className="panel p-5">
           <h2 className="text-xl">Amount</h2>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => setPaymentType("partial")}
-              className={`rounded-md border px-4 py-2 text-sm ${
-                paymentType === "partial" ? "border-primary bg-primary/10" : "border-border"
-              }`}
-            >
-              70% deposit · {naira(Math.round(booking.price * 0.7))}
-            </button>
-            <button
-              type="button"
-              onClick={() => setPaymentType("full")}
-              className={`rounded-md border px-4 py-2 text-sm ${
-                paymentType === "full" ? "border-primary bg-primary/10" : "border-border"
-              }`}
-            >
-              Full payment · {naira(booking.price)}
-            </button>
-          </div>
-          <p className="mt-3 text-sm text-muted-foreground">
-            Balance after this payment: {naira(booking.price - amount)}. Full payment is required
-            before studio access.
+          <p className="mt-3 text-sm">
+            Full payment · <span className="font-semibold text-primary">{naira(booking.price)}</span>
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Transfer the full amount, then upload your receipt below.
           </p>
 
           <div className="mt-4 space-y-1.5">
