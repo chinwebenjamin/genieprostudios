@@ -18,6 +18,7 @@ import { ChangePassword } from "@/components/manager/ChangePassword";
 import { NewBookingForm } from "@/components/manager/NewBookingForm";
 import { naira, formatDateTime, STATUS_LABEL, whatsAppLink } from "@/lib/format";
 import { CustomersList } from "@/components/manager/CustomersList";
+import { EditBookingDialog } from "@/components/manager/EditBookingDialog";
 
 export const Route = createFileRoute("/manager")({
   head: () => ({
@@ -216,6 +217,7 @@ function BookingList({ statuses, actions }: { statuses: string[]; actions?: bool
                 Mark as Completed
               </Button>
             )}
+            <EditBookingDialog booking={b} />
             <Button size="sm" variant="destructive" onClick={() => void remove(b.id)}>
               Delete session
             </Button>
